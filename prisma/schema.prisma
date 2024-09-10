@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_DATABASE_URL")
+}
+
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  hour   DateTime
+  client   String
+  email     String
+  reserveSize Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
