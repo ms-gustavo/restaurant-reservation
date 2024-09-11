@@ -3,6 +3,7 @@ import { CreateReservationUseCase } from "../useCases/CreateReservationUseCase";
 import { PrismaReservationRepository } from "../repositories/PrismaReservationRepository";
 import { AppError } from "../../../shared/errors/AppError";
 import { CreateReservationDTO } from "../dtos/createReservationDTO";
+import { CancelReservationUseCase } from "../useCases/CancelReservationUseCase";
 
 const reservationRepository = new PrismaReservationRepository();
 
@@ -123,6 +124,35 @@ export class ReservationController {
       return response.status(500).json({
         status: "error",
         message: "Erro ao buscar as reservas",
+        details: (error as Error).message,
+      });
+    }
+  }
+
+  async cancelReservation(
+    request: Request,
+    response: Response
+  ): Promise<Response> {
+    const { id } = request.params;
+    const cancelReservationUseCase = new CancelReservationUseCase(
+      reservationRepository
+    );
+
+    try {
+      await cancelReservationUseCase.execute(Number(id));
+
+      return response
+        .status(200)
+        .json({ message: `Reserva cancelada com sucesso!` });
+    } catch (error: unknown) {
+      if (error instanceof AppError) {
+        return response
+          .status(error.statusCode)
+          .json({ message: error.message });
+      }
+      return response.status(500).json({
+        status: "error",
+        message: "Erro ao cancelar a reserva",
         details: (error as Error).message,
       });
     }

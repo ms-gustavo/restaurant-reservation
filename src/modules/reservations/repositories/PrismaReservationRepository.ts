@@ -72,4 +72,22 @@ export class PrismaReservationRepository implements IReservationRepository {
       },
     });
   }
+
+  async getReservationById(reservationId: number): Promise<Reservation> {
+    const reservation = await prisma.reservation.findUnique({
+      where: {
+        id: reservationId,
+      },
+    });
+
+    return reservation!;
+  }
+
+  async cancelReservation(reservationId: number): Promise<void> {
+    await prisma.reservation.delete({
+      where: {
+        id: reservationId,
+      },
+    });
+  }
 }

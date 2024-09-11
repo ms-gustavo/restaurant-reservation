@@ -22,11 +22,14 @@ reservationRoutes.get(
   validateQueryDTO(GetReservationByDateDTO),
   reservationController.getReservationByDateAndHour
 );
-
 reservationRoutes.post(
   "/reservations",
   validateDTO(CreateReservationDTO),
   reservationController.create
+);
+reservationRoutes.delete(
+  "/reservations/:id",
+  reservationController.cancelReservation
 );
 
 export { reservationRoutes };
