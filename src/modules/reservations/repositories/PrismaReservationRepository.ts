@@ -17,6 +17,26 @@ export class PrismaReservationRepository implements IReservationRepository {
     return reserve;
   }
 
+  async getTotalReservedByDate(date: Date): Promise<number> {
+    const parsedDate = new Date(date);
+    const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999));
+
+    const total = await prisma.reservation.aggregate({
+      _sum: {
+        reserveSize: true,
+      },
+      where: {
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+
+    return total._sum.reserveSize || 0;
+  }
+
   async getAllReservations(): Promise<Reservation[]> {
     return prisma.reservation.findMany();
   }
