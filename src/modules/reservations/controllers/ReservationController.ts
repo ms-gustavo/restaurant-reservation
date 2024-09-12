@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { container } from "tsyringe";
 import { CreateReservationUseCase } from "../useCases/CreateReservationUseCase";
-import { PrismaReservationRepository } from "../repositories/PrismaReservationRepository";
 import { AppError } from "../../../shared/errors/AppError";
 import { CreateReservationDTO } from "../dtos/createReservationDTO";
 import { CancelReservationUseCase } from "../useCases/CancelReservationUseCase";
@@ -9,7 +8,6 @@ import { GetReservationsByDateUseCase } from "../useCases/GetReservationsByDateU
 import { GetAllReservationsUseCase } from "../useCases/GetAllReservationsUseCase";
 import { GetReservationsByDateAndHourUseCase } from "../useCases/GetReservationsByDateAndHourUseCase";
 
-const reservationRepository = new PrismaReservationRepository();
 export class ReservationController {
   async create(request: Request, response: Response): Promise<Response> {
     const { date, hour, client, email, reserveSize }: CreateReservationDTO =

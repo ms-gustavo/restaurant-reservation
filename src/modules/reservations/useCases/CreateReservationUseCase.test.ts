@@ -41,10 +41,6 @@ describe("Create Reservation Use Case", () => {
     };
 
     mockReservationRepository.getTotalReservedByDate.mockResolvedValue(10);
-    console.log(
-      "Total reservado:",
-      await mockReservationRepository.getTotalReservedByDate(new Date())
-    );
 
     await expect(
       createReservationUseCase.execute(reservationMaximumData)
