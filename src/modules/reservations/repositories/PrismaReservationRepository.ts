@@ -73,7 +73,7 @@ export class PrismaReservationRepository implements IReservationRepository {
     });
   }
 
-  async getReservationById(reservationId: number): Promise<Reservation> {
+  async getReservationById(reservationId: number): Promise<Reservation | null> {
     const reservation = await prisma.reservation.findUnique({
       where: {
         id: reservationId,

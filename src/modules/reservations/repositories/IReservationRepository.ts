@@ -7,6 +7,6 @@ export interface IReservationRepository {
   getReservationByDate(date: Date): Promise<Reservation[]>;
   getReservationByDateAndHour(date: Date, hour: string): Promise<Reservation[]>;
   getTotalReservedByDate(date: Date): Promise<number>;
-  getReservationById(reservationId: number): Promise<Reservation>;
+  getReservationById(reservationId: number): Promise<Reservation | null>;
   cancelReservation(reservationId: number): Promise<void>;
 }
