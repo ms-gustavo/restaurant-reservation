@@ -1,22 +1,25 @@
 import { Request, Response } from "express";
+import { container } from "tsyringe";
 import { CreateReservationUseCase } from "../useCases/CreateReservationUseCase";
 import { PrismaReservationRepository } from "../repositories/PrismaReservationRepository";
 import { AppError } from "../../../shared/errors/AppError";
 import { CreateReservationDTO } from "../dtos/createReservationDTO";
 import { CancelReservationUseCase } from "../useCases/CancelReservationUseCase";
+import { GetReservationsByDateUseCase } from "../useCases/GetReservationsByDateUseCase";
+import { GetAllReservationsUseCase } from "../useCases/GetAllReservationsUseCase";
+import { GetReservationsByDateAndHourUseCase } from "../useCases/GetReservationsByDateAndHourUseCase";
 
 const reservationRepository = new PrismaReservationRepository();
-
 export class ReservationController {
   async create(request: Request, response: Response): Promise<Response> {
     const { date, hour, client, email, reserveSize }: CreateReservationDTO =
       request.body;
 
-    const createReservationUseCase = new CreateReservationUseCase(
-      reservationRepository
-    );
-
     try {
+      const createReservationUseCase = container.resolve(
+        CreateReservationUseCase
+      );
+
       await createReservationUseCase.execute({
         date,
         hour,
@@ -47,11 +50,9 @@ export class ReservationController {
     response: Response
   ): Promise<Response> {
     try {
-      const reservations = await reservationRepository.getAllReservations();
+      const getAllReservations = container.resolve(GetAllReservationsUseCase);
 
-      if (reservations.length < 1) {
-        throw new AppError("Nenhuma reserva encontrada", 404);
-      }
+      const reservations = await getAllReservations.execute();
 
       return response.status(200).json(reservations);
     } catch (error: unknown) {
@@ -75,13 +76,13 @@ export class ReservationController {
     const { date } = request.query;
 
     try {
-      const reservations = await reservationRepository.getReservationByDate(
-        new Date(date as string)
+      const getReservationsByDateUseCase = container.resolve(
+        GetReservationsByDateUseCase
       );
 
-      if (reservations.length < 1) {
-        throw new AppError("Nenhuma reserva encontrada", 404);
-      }
+      const reservations = await getReservationsByDateUseCase.execute(
+        new Date(date as string)
+      );
 
       return response.status(200).json(reservations);
     } catch (error: unknown) {
@@ -105,15 +106,15 @@ export class ReservationController {
     const { date, hour } = request.query;
 
     try {
-      const reservations =
-        await reservationRepository.getReservationByDateAndHour(
-          new Date(date as string),
-          hour as string
-        );
+      const getReservationsByDateUseCase = container.resolve(
+        GetReservationsByDateAndHourUseCase
+      );
 
-      if (reservations.length < 1) {
-        throw new AppError("Nenhuma reserva encontrada", 404);
-      }
+      const reservations = await getReservationsByDateUseCase.execute(
+        new Date(date as string),
+        hour as string
+      );
+
       return response.status(200).json(reservations);
     } catch (error: unknown) {
       if (error instanceof AppError) {
@@ -134,11 +135,12 @@ export class ReservationController {
     response: Response
   ): Promise<Response> {
     const { id } = request.params;
-    const cancelReservationUseCase = new CancelReservationUseCase(
-      reservationRepository
-    );
 
     try {
+      const cancelReservationUseCase = container.resolve(
+        CancelReservationUseCase
+      );
+
       await cancelReservationUseCase.execute(Number(id));
 
       return response

@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { reservationRoutes } from "../../modules/reservations/routes/ReservationRoutes";
 import { errorHandler } from "../middlewares/errorHandler";
+import "../../container/index";
 dotenv.config();
 
 const app = express();

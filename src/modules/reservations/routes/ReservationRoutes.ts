@@ -4,6 +4,7 @@ import { validateDTO } from "../../../shared/middlewares/validateBody";
 import { CreateReservationDTO } from "../dtos/createReservationDTO";
 import { GetReservationByDateDTO } from "../dtos/getReservationByDateDTO";
 import { validateQueryDTO } from "../../../shared/middlewares/validateQuery";
+import { GetReservationByDateAndHourDTO } from "../dtos/getReservationByDateAndHourDTO";
 
 const reservationRoutes = Router();
 const reservationController = new ReservationController();
@@ -19,7 +20,7 @@ reservationRoutes.get(
 );
 reservationRoutes.get(
   "/reservations/hour",
-  validateQueryDTO(GetReservationByDateDTO),
+  validateQueryDTO(GetReservationByDateAndHourDTO),
   reservationController.getReservationByDateAndHour
 );
 reservationRoutes.post(

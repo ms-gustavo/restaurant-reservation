@@ -1,8 +1,13 @@
+import { inject, injectable } from "tsyringe";
 import { AppError } from "../../../shared/errors/AppError";
 import { IReservationRepository } from "../repositories/IReservationRepository";
 
+@injectable()
 export class CancelReservationUseCase {
-  constructor(private reservationRepository: IReservationRepository) {}
+  constructor(
+    @inject("IReservationRepository")
+    private reservationRepository: IReservationRepository
+  ) {}
 
   async execute(reservationId: number): Promise<void> {
     const reservation = await this.reservationRepository.getReservationById(

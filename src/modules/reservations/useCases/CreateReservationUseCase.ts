@@ -1,9 +1,14 @@
 import { IReservationRepository } from "../repositories/IReservationRepository";
 import { CreateReservationDTO } from "../dtos/createReservationDTO";
 import { AppError } from "../../../shared/errors/AppError";
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class CreateReservationUseCase {
-  constructor(private reservationRepository: IReservationRepository) {}
+  constructor(
+    @inject("IReservationRepository")
+    private reservationRepository: IReservationRepository
+  ) {}
 
   async execute(data: CreateReservationDTO): Promise<void> {
     const maxCapacity = parseInt(process.env.MAX_CAPACITY as string);
