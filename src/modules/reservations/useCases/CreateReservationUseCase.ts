@@ -22,7 +22,6 @@ export class CreateReservationUseCase {
         409
       );
     }
-
     await this.reservationRepository.create(data);
   }
 }

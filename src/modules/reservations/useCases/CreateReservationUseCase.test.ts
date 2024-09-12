@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import { CreateReservationUseCase } from "./CreateReservationUseCase";
 import { mockReservationRepository } from "../mocks/mockReservationRepository";
+import { AppError } from "../../../shared/errors/AppError";
 
 describe("Create Reservation Use Case", () => {
   let createReservationUseCase: CreateReservationUseCase;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     createReservationUseCase = new CreateReservationUseCase(
       mockReservationRepository
     );
@@ -17,7 +19,7 @@ describe("Create Reservation Use Case", () => {
       hour: new Date(),
       client: "John Doe",
       email: "johndoe@example.com",
-      reserveSize: 4,
+      reserveSize: 15,
     };
 
     await createReservationUseCase.execute(reservationData);
@@ -26,20 +28,33 @@ describe("Create Reservation Use Case", () => {
     );
   });
 
-  it("should throw an error if the reservation repository fails", async () => {
-    mockReservationRepository.create.mockRejectedValue(
-      new Error("Repository failed")
-    );
-    const reservationData = {
+  it("should thrown an error if the total reserved exceeds the maximum capacity", async () => {
+    const maxCapacity = 10;
+    process.env.MAX_CAPACITY = maxCapacity.toString();
+
+    const reservationMaximumData = {
       date: new Date(),
       hour: new Date(),
       client: "John Doe",
       email: "johndoe@example.com",
-      reserveSize: 4,
+      reserveSize: 5,
     };
 
+    mockReservationRepository.getTotalReservedByDate.mockResolvedValue(10);
+    console.log(
+      "Total reservado:",
+      await mockReservationRepository.getTotalReservedByDate(new Date())
+    );
+
     await expect(
-      createReservationUseCase.execute(reservationData)
-    ).rejects.toThrow("Repository failed");
+      createReservationUseCase.execute(reservationMaximumData)
+    ).rejects.toThrow(
+      new AppError(
+        `Capacidade máxima de reservas excedida para a data escolhida`,
+        409
+      )
+    );
+
+    expect(mockReservationRepository.create).not.toHaveBeenCalled();
   });
 });
